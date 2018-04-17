@@ -42,7 +42,18 @@ var resetButton, musicButton;
      myImage = loadImage("assets/img/image.png");
    }
  */
-
+function loadImages(){
+  backImage = loadImage("assets/img/back.png");
+  sunImage = loadImage("assets/img/sun.png");
+  moonImage = loadImage("assets/img/moon.png");
+  heartImage = loadImage("assets/img/heart.png");
+  boltImage = loadImage("assets/img/bolt.png");
+  cloudImage = loadImage("assets/img/cloud.png");
+  smileyImage = loadImage("assets/img/smiley.png");
+  transitionImage1 = loadImage("assets/img/transition1.png");
+  transitionImage2 = loadImage("assets/img/transition2.png");
+  transitionImage3 = loadImage("assets/img/transition3.png");
+}
 
 /*
  * function loadAnimations()
@@ -55,6 +66,15 @@ var resetButton, musicButton;
      myAnimation = loadAnimation(img1, img2, img3, img4);
    }
  */
+ function loadAnimations(){
+  sunAnimation = loadAnimation(backImage,transitionImage1,transitionImage2,transitionImage3,sunImage);
+  moonAnimation = loadAnimation(backImage,transitionImage1,transitionImage2,transitionImage3,moonImage);
+  heartAnimation = loadAnimation(backImage,transitionImage1,transitionImage2,transitionImage3,heartImage);
+  boltAnimation = loadAnimation(backImage,transitionImage1,transitionImage2,transitionImage3,boltImage);
+  cloudAnimation = loadAnimation(backImage,transitionImage1,transitionImage2,transitionImage3,cloudImage);
+  smileyAnimation = loadAnimation(backImage,transitionImage1,transitionImage2,transitionImage3,smileyImage);
+}
+
 
 
 /*
@@ -67,8 +87,10 @@ var resetButton, musicButton;
      myOtherSound = loadSound("assets/sound/otherSound.mp3");
    }
  */
-
-
+function preload(){
+  loadImages();
+  loadAnimations();
+}
 /*
  * function preload()
  * Called automatically by p5.play. Loads all assets for your game (e.g.,
@@ -76,8 +98,25 @@ var resetButton, musicButton;
  * begin running until the assets are loaded and ready. Therefore, this function
  * is essentially a "pre-setup" function. 
  */
+ function setup(){
+  gameScreen=createCanvas(790,370);
+  gameScreen.parent("#game-screen");
+  spriteWidth=120;
+  spriteHeight=168;
+  spriteX = 70;
+  spriteY=95;
+  imageArray = [backImage,sunImage,moonImage,heartImage,boltImage,cloudImage,smileyImage,transitionImage1,transitionImage2,transitionImage3];
+  resizeImages();
+  createSprites();
+  spriteArray = [sunSprite1,sunSprite2,moonSprite1,moonSprite2,heartSprite1,heartSprite2,boltSprite1,boltSprite2,cloudSprite1,cloudSprite2,smileySprite1,smileySprite2];
+  shuffle(spriteArray,true);
+  placeSprites();
+  placeActive = true;
+  spritesActive = true;
+  matches=0;
+  lives=5;
 
-
+}
 /*
  * function setup()
  * Called automatically by p5.js when the game begins, but after preload().
@@ -89,6 +128,11 @@ var resetButton, musicButton;
 /*
  * function draw()
  */
+ function draw(){
+  background(0);
+  drawSprites();
+
+ }
 
 /*
  * function init()
@@ -121,6 +165,13 @@ var resetButton, musicButton;
    image.resize(40, 50);
  */
 
+ function resizeImages(){
+  for(var i=0; i<imageArray.length; i++){
+    //we are resizing the images and trying not to hardcode the values
+    imageArray[i].resize(spriteWidth,spriteHeight);
+  }
+ }
+
 
 /*
  * function createSprites()
@@ -134,6 +185,20 @@ var resetButton, musicButton;
      mySprite = createSprite(0, 0, spriteWidth, spriteHeight);
    }
  */
+ function createSprites(){
+  sunSprite1 = createSprite(0, 0, spriteWidth, spriteHeight);
+  sunSprite2 = createSprite(0, 0, spriteWidth, spriteHeight);
+  moonSprite1  = createSprite(0, 0, spriteWidth, spriteHeight);
+  moonSprite2  = createSprite(0, 0, spriteWidth, spriteHeight);
+  heartSprite1  = createSprite(0, 0, spriteWidth, spriteHeight);  
+  heartSprite2  = createSprite(0, 0, spriteWidth, spriteHeight);
+  boltSprite1  = createSprite(0, 0, spriteWidth, spriteHeight);
+  boltSprite2  = createSprite(0, 0, spriteWidth, spriteHeight);
+  cloudSprite1  = createSprite(0, 0, spriteWidth, spriteHeight);
+  cloudSprite2  = createSprite(0, 0, spriteWidth, spriteHeight);
+  smileySprite1  = createSprite(0, 0, spriteWidth, spriteHeight);
+  smileySprite2  = createSprite(0, 0, spriteWidth, spriteHeight);
+ }
 
 
 /*
@@ -144,6 +209,19 @@ var resetButton, musicButton;
  * each animation's frameDelay, loop, and playing properties. Finally, this
  * function calls activateSprite(s) with each sprite as input.
  */
+ function addAnimations(){
+  var animations = [sunAnimation,sunAnimation,moonAnimation,moonAnimation,heartAnimation,heartAnimation,boltAnimation,boltAnimation,cloudAnimation,cloudAnimation,smileyAnimation,smileyAnimation];
+  for(var i=0; i<spriteArray.length;i++){
+    spriteArray[i].addAnimation("flip",animations[i]);
+    spriteArray[i].animation.frameDelay=10;
+    spriteArray[i].animation.looping=false;
+    spriteArray[i].animation.playing=false;
+    //activateSprite(spriteArray[i]);
+
+  }
+ }
+
+
 
 
 /*
@@ -152,6 +230,23 @@ var resetButton, musicButton;
  * pattern you like. For starters, try arranging the sprites in a simple
  * grid-like pattern (e.g., 2x2 if you only have four sprites).
  */
+ function placeSprites(){
+  for(var i=0;i<spriteArray.length;i++){
+    spriteArray[i].position.x = spriteX;
+    spriteArray[i].position.y = spriteY;
+    if((i+1)%6 ===0){
+      spriteX=70;
+      spriteY += spriteHeight + 10;
+      //the plus adds it and the equal assigns it
+    } 
+    else {
+      spriteX += spriteWidth + 10;
+    }
+  }
+}
+
+
+ 
 
 
 /*
@@ -165,6 +260,12 @@ var resetButton, musicButton;
  * spriteOne and spriteTwo to sprites in the order tht they are clicked. When
  * two sprites have been clicked, the function calls checkMatch().
  */
+ function activateSprite(s) {
+   s.onMousePressed = function()  {
+     
+   }
+ }
+
 
 
 
