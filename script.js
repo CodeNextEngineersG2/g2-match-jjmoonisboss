@@ -115,7 +115,9 @@ function preload(){
   spritesActive = true;
   matches=0;
   lives=5;
-
+  addAnimations();
+  firstChoice=undefined;
+  secondChoice=undefined;
 }
 /*
  * function setup()
@@ -216,7 +218,7 @@ function preload(){
     spriteArray[i].animation.frameDelay=10;
     spriteArray[i].animation.looping=false;
     spriteArray[i].animation.playing=false;
-    //activateSprite(spriteArray[i]);
+    activateSprite(spriteArray[i]);
 
   }
  }
@@ -262,9 +264,19 @@ function preload(){
  */
  function activateSprite(s) {
    s.onMousePressed = function()  {
-     
+     if (spritesActive==true&&s.animation.getFrame()!=s.animation.getLastFrame()) {
+      if (firstChoice == undefined){
+        firstChoice=s;
+         s.animation.goToFrame(s.animation.getLastFrame())
+       }
+       else if (firstChoice!=s) {
+        secondChoice==s;
+         s.animation.goToFrame(s.animation.getLastFrame())
+       }
+      }
+     }
    }
- }
+ 
 
 
 
