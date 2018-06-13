@@ -44,12 +44,12 @@ var resetButton, musicButton;
  */
 function loadImages(){
   backImage = loadImage("assets/img/back.png");
-  sunImage = loadImage("assets/img/sun.png");
-  moonImage = loadImage("assets/img/moon.png");
-  heartImage = loadImage("assets/img/heart.png");
-  boltImage = loadImage("assets/img/bolt.png");
-  cloudImage = loadImage("assets/img/cloud.png");
-  smileyImage = loadImage("assets/img/smiley.png");
+  sunImage = loadImage("assets/img/Kirbycupid.png");
+  moonImage = loadImage("assets/img/Kirbyninja.png");
+  heartImage = loadImage("assets/img/Kirbyshinobi.png");
+  boltImage = loadImage("assets/img/Kirbyyoyo.png");
+  cloudImage = loadImage("assets/img/Icekirby.png");
+  smileyImage = loadImage("assets/img/Leafkirby.png");
   transitionImage1 = loadImage("assets/img/transition1.png");
   transitionImage2 = loadImage("assets/img/transition2.png");
   transitionImage3 = loadImage("assets/img/transition3.png");
@@ -87,6 +87,17 @@ function loadImages(){
      myOtherSound = loadSound("assets/sound/otherSound.mp3");
    }
  */
+function loadSounds(){
+  winSound = loadSound("assets/sound/kirbywin.mp3");
+  loseSound= loadSound("assets/sound/kirbylose.mp3");
+  matchSound=loadSound("assets/sound/match.wav");
+  nopeSound=loadSound("assets/sound/lose.wav");
+  bgMusic=loadSound("assets/sound/newbgm.mp3")
+}
+
+
+
+
 function preload(){
   loadImages();
   loadAnimations();
@@ -102,9 +113,9 @@ function preload(){
   gameScreen=createCanvas(790,370);
   gameScreen.parent("#game-screen");
   spriteWidth=120;
-  spriteHeight=168;
-  spriteX = 70;
-  spriteY=95;
+  spriteHeight=120;
+  spriteX = 100;
+  spriteY=-140;
   imageArray = [backImage,sunImage,moonImage,heartImage,boltImage,cloudImage,smileyImage,transitionImage1,transitionImage2,transitionImage3];
   resizeImages();
   createSprites();
@@ -118,6 +129,8 @@ function preload(){
   addAnimations();
   firstChoice=undefined;
   secondChoice=undefined;
+  shuffle(spriteArray, true);
+  placeSprites();
 }
 /*
  * function setup()
@@ -131,7 +144,7 @@ function preload(){
  * function draw()
  */
  function draw(){
-  background(0);
+  background(255, 221, 237);
   drawSprites();
 
  }
@@ -156,6 +169,15 @@ function preload(){
  * function toggleMusic()
  * Toggles the background music on and off.
  */
+ function toggleMusic(){
+  if (bgMusic.isPlaying()){
+    bgMusic.pause();
+  }
+  else{
+    bgMusic.loop();
+  }
+ }
+
 
 
 /*
@@ -238,11 +260,11 @@ function preload(){
     spriteArray[i].position.y = spriteY;
     if((i+1)%6 ===0){
       spriteX=70;
-      spriteY += spriteHeight + 10;
+      spriteY = spriteY + spriteHeight +10 ;
       //the plus adds it and the equal assigns it
     } 
     else {
-      spriteX += spriteWidth + 10;
+      spriteX = spriteX + spriteWidth + 10;
     }
   }
 }
@@ -272,12 +294,12 @@ function preload(){
        else if (firstChoice!=s) {
         secondChoice==s;
          s.animation.goToFrame(s.animation.getLastFrame())
+         checkMatch() 
        }
       }
      }
    }
  
-
 
 
 
@@ -291,15 +313,86 @@ function preload(){
  * (as indicated by the "lives" variable), they are notified that they have
  * lost and all sprites are simultaneously flipped face-up, revealing their
  * locations to the player. Win or lose, the player is given the option to
- * reset and try again with a fresh shuffle.
+ * reset and try again with a fresh shuffle. 
  */
+function checkMatch(){
+var boltMatch = (firstChoice === boltSprite1 && secondChoice === boltSprite2) || (firstChoice === boltSprite2 && secondChoice === boltSprite1);
+var cloudMatch = (firstChoice === cloudSprite1 && secondChoice === cloudSprite2) || (firstChoice === cloudSprite2 && secondChoice === cloudSprite1);
+var sunMatch = (firstChoice === sunSprite1 && secondChoice === sunSprite2) || (firstChoice === sunSprite2 && secondChoice === sunSprite1);
+var moonMatch= (firstChoice === moonSprite1 && secondChoice === moonSprite2) || (firstChoice === moonSprite2 && secondChoice === moonSprite1);
+var smileyMatch= (firstChoice === smileySprite1 && secondChoice === smileySprite2) || (firstChoice === smileySprite2 && secondChoice === smileySprite1);
+var heartMatch= (firstChoice === heartSprite1 && secondChoice === heartSprite2) || (firstChoice === heartSprite2 && secondChoice === heartSprite1);
+
+if (boltMatch || cloudMatch|| sunMatch|| moonMatch|| smileyMatch|| heartMatch){
+  matches++;
+  matchSound.play();
+   spritesActive= false;
+    if(matches === spriteArray.length/2){
+      setTimeout(function(){
+
+      },500);
+
+setTimeout(function() {
+  alert.html("HORAY!!");
+}, 2000);
+ setTimeout(function(){
+        flipAllSprites()
+      },2000);
+
+}
+  
+    else{
+      firstChoice=undefined;
+      secondChoice=undefined;
+    }
+  }
+  else{
+    lives--;
+    //nopeSound.play();
+    spritesActive= false;
+    if(lives ===0){
+      setTimeout(function(){
+        flipAllSprites()
+      },2000);
+    messageDisplay.html("TRY AGAIN!!");
+    livesDisplay.html("");
+    musicButton.hide();
+    resetButton.show();
+    loseSound.play();
+  
+    }
+    else{
+      setTimeout(function(){
+           nopeSound.play();
+           firstChoice.animation.goToFrame(0);
+           secondChoice.animation.goToFrame(0);
+           firstChoice=undefined;
+            secondChoice=undefined;
+            spritesActive = true;},2000);
+      }
+    }
+  }
+
+
+
+
+
+  
+
+
+
+
 
 /*
  * function flipAllSprites()
  * Flips all sprites in spriteArray to their last animation frame (i.e.,
  * "face-up").
+ https://www.youtube.com/watch?v=L3ymBk6Vb04
  */
+ function flipAllSprites(){
+         s.animation.goToFrame(s.animation.getLastFrame())
 
+ }
  /*
   * function resetAllSprites()
   * Does exactly the opposite of the above function!
